@@ -1,6 +1,5 @@
 var gutter = require('../');
 var fs = require('fs');
-var es = require('event-stream');
 var test = require('tap').test;
 var EventEmitter = require('events').EventEmitter;
 var BufferedStream = require('morestreams').BufferedStream;

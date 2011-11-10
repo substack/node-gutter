@@ -42,7 +42,8 @@ module.exports = function (obj) {
                 s.write(buf);
             });
             
-            part.on('end', function () {
+            part.once('end', function () {
+                s._caughtEnd = true;
                 s.end();
             });
             return s;
@@ -67,7 +68,12 @@ module.exports = function (obj) {
             });
             part.pipe(s);
             
-            part.on('end', pop);
+            part.once('end', pop);
+            if (part._caughtEnd) {
+                process.nextTick(function () {
+                    part.emit('end');
+                });
+            }
             part.resume();
         }
     });
