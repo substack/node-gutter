@@ -25,6 +25,12 @@ module.exports = function (obj) {
             
             part.pause();
             s.pause();
+            
+            var resume = s.resume;
+            s.resume = function () {
+                part.resume();
+                return resume.apply(this, arguments);
+            };
             return s;
         }
         else {
@@ -35,7 +41,10 @@ module.exports = function (obj) {
             part.on('data', function (buf) {
                 s.write(buf);
             });
-            part.pause();
+            
+            part.on('end', function () {
+                s.end();
+            });
             return s;
         }
     });

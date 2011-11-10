@@ -48,9 +48,12 @@ test('single stream in an event emitter', function (t) {
     var ws = words.slice();
     var emitter = new EventEmitter;
     var iv = setInterval(function () {
-        if (ws.length === 0) clearInterval(iv)
+        if (ws.length === 0) {
+            clearInterval(iv);
+            emitter.emit('end');
+        }
         else emitter.emit('data', ws.shift())
-    }, 20);
+    }, 5);
     
     var s = gutter({
         a : 3,
