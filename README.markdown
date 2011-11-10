@@ -12,8 +12,9 @@ var fs = require('fs');
 
 var out = gutter({
     name : 'words',
-    version : '0.2.1',
-    words : fs.createReadStream('/usr/share/dict/words', { encoding : 'utf8' })
+    words : fs.createReadStream('/usr/share/dict/words', { encoding : 'utf8' }),
+    passwd : fs.createReadStream('/etc/passwd', { encoding : 'utf8' }),
+    beep : 'boop'
 });
 
 out.pipe(process.stdout);

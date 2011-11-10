@@ -1,4 +1,4 @@
-var gutter = require('../');
+var gutter = require('gutter');
 var fs = require('fs');
 
 var out = gutter({

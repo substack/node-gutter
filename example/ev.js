@@ -1,4 +1,4 @@
-var gutter = require('../');
+var gutter = require('gutter');
 
 var EventEmitter = require('events').EventEmitter;
 var stream = new EventEmitter;
