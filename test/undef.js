@@ -18,7 +18,7 @@ test('undef', function (t) {
     s.on('end', function () {
         t.deepEqual(JSON.parse(data), {
             a : 3,
-            b : undefined,
+            b : null,
             c : null
         });
     });

@@ -93,6 +93,9 @@ function split (obj) {
             parts.push(node);
             this.block();
         }
+        else if (node === null || node === undefined) {
+            s += 'null';
+        }
         else if (Array.isArray(node)) {
             this.before(function () { s += '[' });
             this.post(function (child) {
