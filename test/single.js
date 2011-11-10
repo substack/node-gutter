@@ -3,6 +3,8 @@ var fs = require('fs');
 var es = require('event-stream');
 var test = require('tap').test;
 var EventEmitter = require('events').EventEmitter;
+var BufferedStream = require('morestreams').BufferedStream;
+var es = require('event-stream');
 
 var words = fs.readFileSync(__dirname + '/words.txt', 'utf8')
     .split(/\n/)
@@ -10,7 +12,7 @@ var words = fs.readFileSync(__dirname + '/words.txt', 'utf8')
     .map(function (s) { return s + '\n' })
 ;
 
-test('single stream in an object', function (t) {
+test('single stream', function (t) {
     t.plan(1);
     
     var s = gutter({
@@ -42,7 +44,7 @@ test('single stream in an object', function (t) {
     });
 });
 
-test('single stream in an event emitter', function (t) {
+test('single stream with an event emitter', function (t) {
     t.plan(1);
     
     var ws = words.slice();
@@ -59,6 +61,41 @@ test('single stream in an event emitter', function (t) {
         a : 3,
         b : 4,
         stream : emitter,
+        c : 5
+    });
+    
+    var data = '';
+    s.on('data', function (buf) {
+        data += buf;
+    });
+    
+    s.on('end', function () {
+        t.deepEqual(
+            JSON.parse(data),
+            {
+                a : 3,
+                b : 4,
+                stream : words,
+                c : 5
+            }
+        );
+        t.end();
+    });
+});
+
+test('single stream with a BufferedStream', function (t) {
+    t.plan(1);
+    
+    var bs = new BufferedStream;
+    es.connect(
+        fs.createReadStream(__dirname + '/words.txt'),
+        es.split()
+    ).pipe(bs);
+    
+    var s = gutter({
+        a : 3,
+        b : 4,
+        stream : bs,
         c : 5
     });
     
