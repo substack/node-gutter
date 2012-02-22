@@ -1,4 +1,4 @@
-var sjson = require('JSONStream');
+var JSONStream = require('JSONStream');
 var traverse = require('traverse');
 var BufferedStream = require('morestreams').BufferedStream;
 var EventEmitter = require('events').EventEmitter;
@@ -62,7 +62,7 @@ module.exports = function (obj) {
             pop();
         }
         else {
-            var s = sjson.stringify();
+            var s = JSONStream.stringify();
             s.on('data', function (buf) {
                 output.emit('data', buf);
             });
