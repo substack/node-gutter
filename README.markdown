@@ -37,6 +37,11 @@ available.
 If there are multiple streams in `object`, the others will get paused and
 buffered while waiting for each stream to finish.
 
+Streams are treated as arrays with new elements for every `'data'` event.
+To emit a streaming object using
+[JSONStream](https://github.com/dominictarr/JSONStream)
+`.stringifyStream()`, set `stream.type = 'object'`.
+
 install
 =======
 
