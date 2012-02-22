@@ -23,15 +23,8 @@ module.exports = function (obj) {
             s.writable = true;
             s.type = part.type;
             part.pipe(s);
-            
-            part.pause();
             s.pause();
             
-            var resume = s.resume;
-            s.resume = function () {
-                part.resume();
-                return resume.apply(this, arguments);
-            };
             return s;
         }
         else {
