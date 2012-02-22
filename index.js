@@ -21,6 +21,7 @@ module.exports = function (obj) {
             var s = new BufferedStream();
             s.readable = true;
             s.writable = true;
+            s.type = part.type;
             part.pipe(s);
             
             part.pause();
@@ -38,6 +39,7 @@ module.exports = function (obj) {
             s.readable = true;
             s.writable = true;
             s.pause();
+            s.type = part.type;
             part.on('data', function (buf) {
                 s.write(buf);
             });
@@ -62,7 +64,10 @@ module.exports = function (obj) {
             pop();
         }
         else {
-            var s = JSONStream.stringify();
+            var s = part.type === 'object'
+                ? JSONStream.stringifyObject()
+                : JSONStream.stringify()
+            ;
             s.on('data', function (buf) {
                 output.emit('data', buf);
             });

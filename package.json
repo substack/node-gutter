@@ -22,7 +22,7 @@
     },
     "dependencies" : {
         "traverse" : "0.5.x",
-        "JSONStream" : "0.1.x",
+        "JSONStream" : "https://github.com/substack/JSONStream/tarball/master",
         "morestreams" : "0.1.x"
     },
     "devDependencies" : {
