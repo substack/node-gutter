@@ -3,6 +3,8 @@ gutter
 
 Streaming JSON.stringify() for nested streams
 
+[![build status](https://secure.travis-ci.org/substack/node-gutter.png)](http://travis-ci.org/substack/node-gutter)
+
 example
 =======
 
