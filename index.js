@@ -1,36 +1,35 @@
 var JSONStream = require('JSONStream');
 var traverse = require('traverse');
-var BufferedStream = require('morestreams').BufferedStream;
+var pauseStream = require('pause-stream');
 var EventEmitter = require('events').EventEmitter;
 var Stream = require('stream').Stream;
 
 module.exports = function (obj) {
-    var output = new BufferedStream;
-    output.readable = true;
-    output.writable = false;
+    var output = pauseStream();
+    output.willBuffer = true;
     
     var parts = split(obj).map(function (part) {
         if (typeof part === 'string') {
             return part;
         }
-        else if (part instanceof BufferedStream) {
+        else if (part && typeof part === 'object'
+        && typeof part.pause === 'function' && part.willBuffer) {
             part.pause();
             return part;
         }
-        else if (part instanceof Stream) {
-            var s = new BufferedStream();
-            s.readable = true;
-            s.writable = true;
+        else if (part && typeof part === 'object'
+        && typeof part.pipe === 'function') {
+            var s = pauseStream();
+            s.willBuffer = true;
+            s.pause();
             s.type = part.type;
             part.pipe(s);
-            s.pause();
             
             return s;
         }
         else {
-            var s = new BufferedStream();
-            s.readable = true;
-            s.writable = true;
+            var s = pauseStream();
+            s.willBuffer = true;
             s.pause();
             s.type = part.type;
             part.on('data', function (buf) {
@@ -83,7 +82,8 @@ function split (obj) {
     var parts = [];
     var s = '';
     traverse(obj).forEach(function to_s (node) {
-        if (node instanceof EventEmitter) {
+        if (node && typeof node === 'object'
+        && typeof node.emit === 'function') {
             if (s.length) {
                 parts.push(s);
                 s = '';

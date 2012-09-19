@@ -1,7 +1,7 @@
 {
     "name" : "gutter",
     "description" : "streaming JSON.stringify() for nested streams",
-    "version" : "0.1.0",
+    "version" : "0.2.0",
     "repository" : {
         "type" : "git",
         "url" : "git://github.com/substack/node-gutter.git"
@@ -21,12 +21,12 @@
         "test" : "tap test/*.js"
     },
     "dependencies" : {
-        "traverse" : "0.5.x",
+        "traverse" : "~0.6.3",
         "JSONStream" : "https://github.com/substack/JSONStream/tarball/master",
-        "morestreams" : "0.1.x"
+        "pause-stream" : "~0.0.4"
     },
     "devDependencies" : {
-        "tap" : "~0.2.1",
+        "tap" : "~0.3.1",
         "event-stream" : "0.6.x"
     },
     "engines" : {

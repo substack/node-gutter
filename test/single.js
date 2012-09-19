@@ -2,7 +2,7 @@ var gutter = require('../');
 var fs = require('fs');
 var test = require('tap').test;
 var EventEmitter = require('events').EventEmitter;
-var BufferedStream = require('morestreams').BufferedStream;
+var pauseStream = require('pause-stream');
 var es = require('event-stream');
 
 var words = fs.readFileSync(__dirname + '/words.txt', 'utf8')
@@ -82,10 +82,12 @@ test('single stream with an event emitter', function (t) {
     });
 });
 
-test('single stream with a BufferedStream', function (t) {
+test('single stream with a pauseStream', function (t) {
     t.plan(1);
     
-    var bs = new BufferedStream;
+    var bs = pauseStream();
+    bs.pause();
+    
     es.connect(
         fs.createReadStream(__dirname + '/words.txt'),
         es.split()
@@ -115,4 +117,6 @@ test('single stream with a BufferedStream', function (t) {
         );
         t.end();
     });
+    
+    bs.resume();
 });
