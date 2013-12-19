@@ -1,41 +1,44 @@
 {
-    "name" : "gutter",
-    "description" : "streaming JSON.stringify() for nested streams",
-    "version" : "0.2.0",
-    "repository" : {
-        "type" : "git",
-        "url" : "git://github.com/substack/node-gutter.git"
-    },
-    "main" : "index.js",
-    "keywords" : [
-        "stream",
-        "stringify",
-        "json"
-    ],
-    "directories" : {
-        "lib" : ".",
-        "example" : "example",
-        "test" : "test"
-    },
-    "scripts" : {
-        "test" : "tap test/*.js"
-    },
-    "dependencies" : {
-        "traverse" : "~0.6.3",
-        "JSONStream" : "https://github.com/substack/JSONStream/tarball/master",
-        "pause-stream" : "~0.0.4"
-    },
-    "devDependencies" : {
-        "tap" : "~0.3.1",
-        "event-stream" : "0.6.x"
-    },
-    "engines" : {
-        "node" : ">=0.4.0"
-    },
-    "license" : "MIT",
-    "author" : {
-        "name" : "James Halliday",
-        "email" : "mail@substack.net",
-        "url" : "http://substack.net"
-    }
+  "name": "gutter",
+  "description": "streaming JSON.stringify() for nested streams",
+  "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/substack/node-gutter.git"
+  },
+  "main": "index.js",
+  "keywords": [
+    "stream",
+    "stringify",
+    "json"
+  ],
+  "directories": {
+    "lib": ".",
+    "example": "example",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "tap test/*.js"
+  },
+  "dependencies": {
+    "traverse": "~0.6.3",
+    "JSONStream": "https://github.com/substack/JSONStream/tarball/master",
+    "pause-stream": "~0.0.4",
+    "split": "~0.2.10",
+    "stream-combiner": "0.0.4",
+    "through2": "~0.2.3"
+  },
+  "devDependencies": {
+    "tap": "~0.3.1",
+    "event-stream": "0.6.x"
+  },
+  "engines": {
+    "node": ">=0.4.0"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "James Halliday",
+    "email": "mail@substack.net",
+    "url": "http://substack.net"
+  }
 }
