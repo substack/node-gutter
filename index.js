@@ -18,7 +18,10 @@ module.exports = function (root) {
             current = null;
             return d();
         }
-        if (buf === null) return waiting = f;
+        if (buf === null) {
+            current.on('readable', f);
+            return waiting = f;
+        }
         if (currentIndex++ > 0) output.push(',');
         
         if (Buffer.isBuffer(buf)) {
