@@ -2,8 +2,21 @@ var Readable = require('_stream_readable');
 
 module.exports = function (root) {
     var output = new Readable;
-    output._read = function () {
-        // what...
+    
+    var waiting = false;
+    var current = null;
+    
+    output._read = function f () {
+        if (!current) return waiting = f;
+        waiting = false;
+        
+        var buf = current.read();
+        if (buf === null) return current.emit('close');
+        
+        if (Buffer.isBuffer(buf)) {
+            output.push(stringify(buf.toString('utf8')));
+        }
+        else output.push(stringify(buf));
     };
     
     (function walk (node, done) {
@@ -24,8 +37,16 @@ module.exports = function (root) {
             })();
         }
         else if (isStream(node)) {
-            output.push('[STREAM]');
-            done();
+            output.push('[');
+            current = node;
+            
+            node.on('close', function () {
+                output.push(']');
+                current = null;
+                done();
+            });
+            
+            if (waiting) waiting();
         }
         else if (typeof node === 'object') {
             var keys = objectKeys(node);

@@ -4,6 +4,7 @@ var stream = through2();
 stream.push('a');
 stream.push('b');
 stream.push('c');
+stream.push(null);
 
 var out = gutter({
     name : 'greetings',
