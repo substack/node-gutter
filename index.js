@@ -16,7 +16,7 @@ module.exports = function (root) {
             output.push(']');
             var d = current._done;
             current = null;
-            d();
+            return d();
         }
         if (buf === null) return waiting = f;
         if (currentIndex++ > 0) output.push(',');
@@ -77,6 +77,7 @@ module.exports = function (root) {
             var keys = objectKeys(node);
             var len = keys.length;
             var index = 0;
+            var first = true;
             
             output.push('{');
             
@@ -86,14 +87,19 @@ module.exports = function (root) {
                     done();
                 }
                 else {
-                    if (index > 0) output.push(',');
                     var key = keys[index++];
+                    if (node[key] === undefined) return next;
+                    
+                    if (!first) output.push(',');
+                    first = false;
+                    
                     output.push(stringify(key) + ':');
                     walk(node[key], next);
                 }
             })();
         }
         else if (node === undefined) {
+            output.push('null');
             done();
         }
         else {
