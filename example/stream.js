@@ -7,7 +7,7 @@ stream.push('c');
 
 var out = gutter({
     name : 'greetings',
-    version : '1.2.3',
+    version : [1,2,3],
     greetings : stream,
     beep : 'boop'
 });
