@@ -1,4 +1,4 @@
-var Readable = require('_stream_readable');
+var Readable = require('stream').Readable;
 
 module.exports = function (root) {
     var output = new Readable;
@@ -40,7 +40,9 @@ module.exports = function (root) {
         }
         else if (isStream(node)) {
             output.push('[');
-            current = node;
+            current = typeof node.read === 'function'
+                ? node : new Readable({ objectMode: true }).wrap(node)
+            ;
             currentIndex = 0;
             
             node.on('close', function () {
