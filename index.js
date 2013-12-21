@@ -5,6 +5,7 @@ module.exports = function (root) {
     
     var waiting = false;
     var current = null;
+    var currentIndex = 0;
     
     output._read = function f () {
         if (!current) return waiting = f;
@@ -12,6 +13,7 @@ module.exports = function (root) {
         
         var buf = current.read();
         if (buf === null) return current.emit('close');
+        if (currentIndex++ > 0) output.push(',');
         
         if (Buffer.isBuffer(buf)) {
             output.push(stringify(buf.toString('utf8')));
@@ -39,6 +41,7 @@ module.exports = function (root) {
         else if (isStream(node)) {
             output.push('[');
             current = node;
+            currentIndex = 0;
             
             node.on('close', function () {
                 output.push(']');
