@@ -26,7 +26,7 @@ test('expand a streams1 stream', function (t) {
             beep: 'boop'
         });
     }));
-
+    
     stream.resume();
     stream.queue('d');
     stream.queue(null);

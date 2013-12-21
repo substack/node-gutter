@@ -12,7 +12,12 @@ module.exports = function (root) {
         waiting = false;
         
         var buf = current.read();
-        if (buf === null) return current.emit('close');
+        if (buf === null && current._ended === true) {
+            var d = current._done;
+            current = null;
+            d();
+        }
+        if (buf === null) return waiting = f;
         if (currentIndex++ > 0) output.push(',');
         
         if (Buffer.isBuffer(buf)) {
@@ -40,17 +45,31 @@ module.exports = function (root) {
         }
         else if (isStream(node)) {
             output.push('[');
-            current = typeof node.read === 'function'
-                ? node : new Readable({ objectMode: true }).wrap(node)
-            ;
             currentIndex = 0;
-            
-            node.on('close', function () {
-                output.push(']');
-                current = null;
-                done();
-            });
-            
+            if (typeof node.read === 'function') {
+                current = node;
+                current.on('end', function () {
+                    output.push(']');
+                    current = null;
+                    done();
+                });
+            }
+            else {
+                current = new Readable({ objectMode: true });
+                current._read = function () {};
+                current._ended = false;
+                
+                node.on('data', function (buf) {
+                    current.push(buf);
+                    if (waiting) waiting();
+                });
+                node.on('end', function () {
+                    current.push(null);
+                    if (waiting) waiting();
+                    current._ended = true;
+                    current._done = done;
+                });
+            }
             if (waiting) waiting();
         }
         else if (typeof node === 'object') {
