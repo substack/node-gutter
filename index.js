@@ -12,12 +12,6 @@ module.exports = function (root) {
         waiting = false;
         
         var buf = current.read();
-        if (buf === null && current._ended === true) {
-            output.push(']');
-            var d = current._done;
-            current = null;
-            return d();
-        }
         if (buf === null) {
             current.on('readable', f);
             return waiting = f;
@@ -52,28 +46,16 @@ module.exports = function (root) {
             currentIndex = 0;
             if (typeof node.read === 'function') {
                 current = node;
-                current.on('end', function () {
-                    output.push(']');
-                    current = null;
-                    done();
-                });
             }
             else {
-                current = new Readable({ objectMode: true });
-                current._read = function () {};
-                current._ended = false;
-                
-                node.on('data', function (buf) {
-                    current.push(buf);
-                    if (waiting) waiting();
-                });
-                node.on('end', function () {
-                    current.push(null);
-                    if (waiting) waiting();
-                    current._ended = true;
-                    current._done = done;
-                });
+                current = new Readable({ objectMode: true }).wrap(node);
             }
+            
+            current.on('end', function () {
+                output.push(']');
+                current = null;
+                done();
+            });
             if (waiting) waiting();
         }
         else if (typeof node === 'object') {
