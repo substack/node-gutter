@@ -13,6 +13,7 @@ module.exports = function (root) {
         
         var buf = current.read();
         if (buf === null && current._ended === true) {
+            output.push(']');
             var d = current._done;
             current = null;
             d();

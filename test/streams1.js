@@ -22,7 +22,7 @@ test('expand a streams1 stream', function (t) {
         t.deepEqual(JSON.parse(body), {
             name: 'greetings',
             version: [1,2,3],
-            greetings: ['abc','d'],
+            greetings: ['a','b','c','d'],
             beep: 'boop'
         });
     }));
