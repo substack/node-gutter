@@ -6,41 +6,61 @@ module.exports = function (root) {
         // what...
     };
     
-    (function walk (node, cb) {
+    (function walk (node, done) {
         if (isArray(node)) {
-            var parts = [];
-            for (var i = 0; i < node.length; i++) {
-                if (isStream(node[i])) {
-                    output.push('[' + parts.join(',') + ',');
-                    return;
+            var len = node.length;
+            var index = 0;
+            
+            output.push('[');
+            (function next () {
+                if (index >= len) {
+                    output.push(']');
+                    done();
                 }
-                else parts.push(node[i]);
-            }
-            output.push('[' + parts.join(',') + ']');
-            cb();
+                else {
+                    if (index > 0) output.push(',');
+                    walk(node[index++], next);
+                }
+            })();
+        }
+        else if (isStream(node)) {
+            output.push('[STREAM]');
+            done();
         }
         else if (typeof node === 'object') {
             var keys = objectKeys(node);
-            var parts = [];
-            for (var i = 0; i < keys.length; i++) {
-                var key = keys[i];
-                var value = node[key];
-                if (isStream(value)) {
-                    output.push('{' + parts.join(',') + ',');
-                    return;
+            var len = keys.length;
+            var index = 0;
+            
+            output.push('{');
+            
+            (function next () {
+                if (index >= len) {
+                    output.push('}');
+                    done();
                 }
                 else {
-                    parts.push(stringify(key) + ':' + stringify(value));
+                    if (index > 0) output.push(',');
+                    var key = keys[index++];
+                    output.push(stringify(key) + ':');
+                    walk(node[key], next);
                 }
-            }
-            output.push('{' + parts.join(',') + '}');
-            cb();
+            })();
+        }
+        else if (node === undefined) {
+            done();
         }
         else {
+            output.push(stringify(node));
+            done();
         }
-    })(root);
+    })(root, end);
     
     return output;
+    
+    function end () {
+        output.push(null);
+    }
 };
 
 var isArray = Array.isArray || function (obj) {
