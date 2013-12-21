@@ -13,9 +13,7 @@
     "json"
   ],
   "scripts": {
-    "test": "tape test/*.js"
-  },
-  "dependencies": {
+    "test": "tape test/*.js test/server/*.js"
   },
   "devDependencies": {
     "through2": "~0.2.3",

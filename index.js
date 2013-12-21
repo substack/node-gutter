@@ -13,7 +13,7 @@ module.exports = function (root) {
         
         var buf = current.read();
         if (buf === null) {
-            current.on('readable', f);
+            current.once('readable', f);
             return waiting = f;
         }
         if (currentIndex++ > 0) output.push(',');
