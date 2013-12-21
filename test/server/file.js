@@ -5,14 +5,14 @@ var gutter = require('../../');
 var through2 = require('through2');
 
 var sources = {
-    mtab: fs.readFileSync(__dirname + '/mtab'),
-    issue: fs.readFileSync(__dirname + '/issue'),
-    legal: fs.readFileSync(__dirname + '/legal'),
-    self: fs.readFileSync(__filename)
+    mtab: fs.readFileSync(__dirname + '/mtab', 'utf8'),
+    issue: fs.readFileSync(__dirname + '/issue', 'utf8'),
+    legal: fs.readFileSync(__dirname + '/legal', 'utf8'),
+    self: fs.readFileSync(__filename, 'utf8')
 };
 
 test('nested files', function (t) {
-    t.plan(1);
+    t.plan(8);
     
     var files = through2({ objectMode: true });
     
@@ -46,6 +46,21 @@ test('nested files', function (t) {
         hello : 'world'
     });
     out.pipe(concat(function (body) {
-        console.log(body.toString('utf8'));
+        var r = JSON.parse(body);
+        t.equal(r.name, 'files in streams in files');
+        t.equal(r.legal.join(','), sources.legal);
+        t.equal(r.hello, 'world');
+        t.deepEqual(
+            Object.keys(r).sort(),
+            ['files','hello','legal','name']
+        );
+        
+        t.deepEqual(
+            Object.keys(r.files).sort(),
+            ['issue','mtab','self']
+        );
+        t.equal(r.files.issue.join(','), sources.issue);
+        t.equal(r.files.mtab.join(','), sources.mtab);
+        t.equal(r.files.self.self.join(','), sources.self);
     }));
 });
