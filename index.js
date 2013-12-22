@@ -9,16 +9,17 @@ module.exports = function (root) {
     function walk (node, done) {
         if (isArray(node)) {
             var len = node.length;
-            output.push('[');
-            
             var index = 0;
+            
             reader = function f () {
                 if (index >= len) {
                     output.push(']');
                     done();
                 }
                 else {
-                    if (index > 0) output.push(',');
+                    if (index === 0) output.push('[');
+                    else output.push(',');
+                    
                     walk(node[index++], function () {
                         reader = f;
                     });
@@ -77,12 +78,16 @@ module.exports = function (root) {
             };
         }
         else if (node === undefined) {
-            output.push('null');
-            done();
+            reader = function () {
+                output.push('null');
+                done();
+            };
         }
         else {
-            output.push(stringify(node));
-            done();
+            reader = function () {
+                output.push(stringify(node));
+                done();
+            };
         }
     }
     
