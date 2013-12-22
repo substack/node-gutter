@@ -2,61 +2,52 @@ var Readable = require('stream').Readable;
 
 module.exports = function (root) {
     var output = new Readable;
+    var reader = function () { walk(root, end) };
     
-    var waiting = false;
-    var current = null;
-    var currentIndex = 0;
+    output._read = function () { reader() };
     
-    output._read = function f () {
-        if (!current) return waiting = f;
-        waiting = false;
-        
-        var buf = current.read();
-        if (buf === null) {
-            current.once('readable', f);
-            return waiting = f;
-        }
-        if (currentIndex++ > 0) output.push(',');
-        
-        if (Buffer.isBuffer(buf)) {
-            output.push(stringify(buf.toString('utf8')));
-        }
-        else output.push(stringify(buf));
-    };
-    
-    (function walk (node, done) {
+    function walk (node, done) {
         if (isArray(node)) {
             var len = node.length;
-            var index = 0;
-            
             output.push('[');
-            (function next () {
+            
+            var index = 0;
+            reader = function f () {
                 if (index >= len) {
                     output.push(']');
                     done();
                 }
                 else {
                     if (index > 0) output.push(',');
-                    walk(node[index++], next);
+                    walk(node[index++], function () {
+                        reader = f;
+                    });
                 }
-            })();
+            };
         }
         else if (isStream(node)) {
             output.push('[');
-            currentIndex = 0;
+            
+            /*
             if (typeof node.read === 'function') {
-                current = node;
             }
             else {
-                current = new Readable({ objectMode: true }).wrap(node);
+                new Readable({ objectMode: true }).wrap(node);
             }
+            */
             
+            reader = function () {
+                output.push('"TODO"]');
+                done();
+            };
+            
+            /*
             current.on('end', function () {
                 output.push(']');
                 current = null;
                 done();
             });
-            if (waiting) waiting();
+            */
         }
         else if (typeof node === 'object') {
             var keys = objectKeys(node);
@@ -66,7 +57,7 @@ module.exports = function (root) {
             
             output.push('{');
             
-            (function next () {
+            reader = function f () {
                 if (index >= len) {
                     output.push('}');
                     done();
@@ -79,9 +70,11 @@ module.exports = function (root) {
                     first = false;
                     
                     output.push(stringify(key) + ':');
-                    walk(node[key], next);
+                    walk(node[key], function () {
+                        reader = f;
+                    });
                 }
-            })();
+            };
         }
         else if (node === undefined) {
             output.push('null');
@@ -91,7 +84,7 @@ module.exports = function (root) {
             output.push(stringify(node));
             done();
         }
-    })(root, end);
+    }
     
     return output;
     
