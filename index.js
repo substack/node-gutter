@@ -2,7 +2,10 @@ var Readable = require('stream').Readable;
 
 module.exports = function (root) {
     var output = new Readable;
-    var reader = function () { walk(root, end) };
+    var reader = function () {
+        walk(root, end);
+        reader();
+    };
     
     output._read = function () { reader() };
     
@@ -14,33 +17,33 @@ module.exports = function (root) {
             reader = function f () {
                 if (index >= len) {
                     output.push(']');
-                    done();
+                    return done();
                 }
-                else {
-                    if (index === 0) output.push('[');
-                    else output.push(',');
-                    
-                    walk(node[index++], function () {
-                        reader = f;
-                    });
-                }
+                if (index === 0) output.push('[');
+                else output.push(',');
+                
+                walk(node[index++], function () {
+                    reader = f;
+                });
             };
         }
         else if (isStream(node)) {
-            output.push('[');
-            
             var stream = typeof node.read === 'function'
                 ? node
                 : new Readable({ objectMode: true }).wrap(node)
             ;
+            var index = 0;
+            
             stream.on('end', function () {
-                output.push(']');
                 done();
+                output.push(']');
             });
             
             reader = function f () {
                 var buf = stream.read();
                 if (buf === null) return stream.once('readable', f);
+                if (index++ === 0) output.push('[')
+                else output.push(',');
                 
                 if (Buffer.isBuffer(buf)) {
                     walk(buf.toString('utf8'), onwalk);
@@ -56,25 +59,23 @@ module.exports = function (root) {
             var index = 0;
             var first = true;
             
-            output.push('{');
-            
             reader = function f () {
                 if (index >= len) {
                     output.push('}');
-                    done();
+                    return done();
                 }
-                else {
-                    var key = keys[index++];
-                    if (node[key] === undefined) return next;
-                    
-                    if (!first) output.push(',');
-                    first = false;
-                    
-                    output.push(stringify(key) + ':');
-                    walk(node[key], function () {
-                        reader = f;
-                    });
-                }
+                
+                var key = keys[index++];
+                //if (node[key] === undefined) return next;
+                
+                if (first) output.push('{');
+                else output.push(',');
+                first = false;
+                
+                walk(node[key], function () {
+                    reader = f;
+                });
+                output.push(stringify(key) + ':');
             };
         }
         else if (node === undefined) {
