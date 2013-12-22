@@ -28,28 +28,28 @@ module.exports = function (root) {
         else if (isStream(node)) {
             output.push('[');
             
-            /*
-            if (typeof node.read === 'function') {
-            }
-            else {
-                new Readable({ objectMode: true }).wrap(node);
-            }
-            */
-            
-            reader = function () {
-                output.push('"TODO"]');
-                done();
-            };
-            
-            /*
-            current.on('end', function () {
+            var stream = typeof node.read === 'function'
+                ? node
+                : new Readable({ objectMode: true }).wrap(node)
+            ;
+            stream.on('end', function () {
                 output.push(']');
-                current = null;
                 done();
             });
-            */
+            
+            reader = function f () {
+                var buf = stream.read();
+                if (buf === null) return stream.once('readable', f);
+                
+                if (Buffer.isBuffer(buf)) {
+                    walk(buf.toString('utf8'), onwalk);
+                }
+                else walk(buf, onwalk)
+                
+                function onwalk () { reader = f };
+            };
         }
-        else if (typeof node === 'object') {
+        else if (node && typeof node === 'object') {
             var keys = objectKeys(node);
             var len = keys.length;
             var index = 0;
