@@ -13,5 +13,7 @@ var out = gutter({
 });
 out.pipe(process.stdout);
 
-stream.push('d');
-stream.push(null);
+setTimeout(function () {
+    stream.push('d');
+    stream.push(null);
+}, 10);

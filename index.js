@@ -33,6 +33,7 @@ module.exports = function (root) {
                 : new Readable({ objectMode: true }).wrap(node)
             ;
             var index = 0;
+            var ended = false;
             
             stream.on('end', function () {
                 done();
@@ -42,15 +43,16 @@ module.exports = function (root) {
             reader = function f () {
                 var buf = stream.read();
                 if (buf === null) return stream.once('readable', f);
-                if (index++ === 0) output.push('[')
-                else output.push(',');
                 
                 if (Buffer.isBuffer(buf)) {
                     walk(buf.toString('utf8'), onwalk);
                 }
                 else walk(buf, onwalk)
                 
-                function onwalk () { reader = f };
+                if (index++ === 0) output.push('[')
+                else output.push(',');
+                
+                function onwalk () { reader = f }
             };
         }
         else if (node && typeof node === 'object') {
