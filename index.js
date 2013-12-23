@@ -16,8 +16,9 @@ module.exports = function (root) {
             
             reader = function f () {
                 if (index >= len) {
+                    done();
                     output.push(']');
-                    return done();
+                    return;
                 }
                 if (index === 0) output.push('[');
                 else output.push(',');
@@ -33,7 +34,6 @@ module.exports = function (root) {
                 : new Readable({ objectMode: true }).wrap(node)
             ;
             var index = 0;
-            var ended = false;
             
             stream.on('end', function () {
                 done();
@@ -82,14 +82,14 @@ module.exports = function (root) {
         }
         else if (node === undefined) {
             reader = function () {
-                output.push('null');
                 done();
+                output.push('null');
             };
         }
         else {
             reader = function () {
-                output.push(stringify(node));
                 done();
+                output.push(stringify(node));
             };
         }
     }
@@ -97,7 +97,9 @@ module.exports = function (root) {
     return output;
     
     function end () {
-        output.push(null);
+        reader = function () {
+            output.push(null);
+        };
     }
 };
 
