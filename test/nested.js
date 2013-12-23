@@ -16,6 +16,7 @@ test('stream in a stream', function (t) {
     stream.push({ a: 97 });
     stream.push({ b: b });
     stream.push({ c: 99 });
+    setTimeout(function () { stream.push(null) }, 400);
     
     var out = gutter({
         before : 'AAA',

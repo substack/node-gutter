@@ -12,6 +12,7 @@ var stream = through2({ objectMode: true });
 stream.push({ a: 97 });
 stream.push({ b: b });
 stream.push({ c: 99 });
+setTimeout(function () { stream.push(null) }, 400);
 
 var out = gutter({
     before : 'AAA',
