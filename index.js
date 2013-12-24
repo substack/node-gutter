@@ -8,10 +8,10 @@ function Gutter (root) {
     if (!(this instanceof Gutter)) return new Gutter(root);
     Readable.call(this);
     this.stack = [ root ];
+    this._streaming = 0;
 }
 
 Gutter.prototype._read = function () {
-    var self = this;
     if (this.stack.length === 0) return this.push(null);
     
     var current = this.stack.shift();
@@ -32,7 +32,8 @@ Gutter.prototype._read = function () {
         this.push('[');
     }
     else if (isObj && isStream(current)) {
-        this.push('[STREAM]');
+        this.stack.unshift(current);
+        this._readStream(current);
     }
     else if (isObj && current) {
         var keys = objectKeys(current);
@@ -56,6 +57,33 @@ Gutter.prototype._read = function () {
     else {
         this.push(stringify(current));
     }
+};
+
+Gutter.prototype._readStream = function f (stream) {
+    var self = this;
+    if (this._streaming === 0) {
+        stream.on('end', function () {
+            self.stack.shift();
+            if (self._streaming === 0) {
+                self.push('[]');
+            }
+            else {
+                self._streaming = 0;
+                self.push(']');
+            }
+        });
+    }
+    
+    (function reader () {
+        var buf = stream.read();
+        if (buf === null) return stream.once('readable', reader);
+        var prefix = self._streaming++ === 0 ? '[' : ',';
+        
+        if (Buffer.isBuffer(buf)) {
+            self.push(prefix + stringify(buf.toString('utf8')));
+        }
+        else self.push(prefix + stringify(buf));
+    })();
 };
 
 function T (s) { return new Token(s) }
