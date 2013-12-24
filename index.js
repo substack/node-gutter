@@ -1,108 +1,63 @@
 var Readable = require('stream').Readable;
+var inherits = require('inherits');
 
-module.exports = function (root) {
-    var output = new Readable;
-    var reader = function () {
-        walk(root, end);
-        reader();
-    };
+module.exports = Gutter;
+inherits(Gutter, Readable);
+
+function Gutter (root) {
+    if (!(this instanceof Gutter)) return new Gutter(root);
+    Readable.call(this);
+    this.stack = [ root ];
+}
+
+Gutter.prototype._read = function () {
+    var self = this;
+    if (this.stack.length === 0) return this.push(null);
     
-    output._read = function () { reader() };
+    var current = this.stack.shift();
+    var isObj = typeof current === 'object';
     
-    function walk (node, done) {
-        if (isArray(node)) {
-            var len = node.length;
-            var index = 0;
-            
-            reader = function f () {
-                if (index >= len) {
-                    done();
-                    output.push(']');
-                    return;
-                }
-                if (index === 0) output.push('[');
-                else output.push(',');
-                
-                walk(node[index++], function () {
-                    reader = f;
-                });
-            };
-        }
-        else if (isStream(node)) {
-            var stream = typeof node.read === 'function'
-                ? node
-                : new Readable({ objectMode: true }).wrap(node)
-            ;
-            var index = 0;
-            
-            stream.on('end', function () {
-                done();
-                output.push(']');
-            });
-            
-            reader = function f () {
-                var buf = stream.read();
-                if (buf === null) return stream.once('readable', f);
-                
-                if (Buffer.isBuffer(buf)) {
-                    walk(buf.toString('utf8'), onwalk);
-                }
-                else walk(buf, onwalk)
-                
-                if (index++ === 0) output.push('[')
-                else output.push(',');
-                
-                function onwalk () { reader = f }
-            };
-        }
-        else if (node && typeof node === 'object') {
-            var keys = objectKeys(node);
-            var len = keys.length;
-            var index = 0;
-            var first = true;
-            
-            reader = function f () {
-                if (index >= len) {
-                    output.push('}');
-                    return done();
-                }
-                
-                var key = keys[index++];
-                //if (node[key] === undefined) return next;
-                
-                if (first) output.push('{');
-                else output.push(',');
-                first = false;
-                
-                walk(node[key], function () {
-                    reader = f;
-                });
-                output.push(stringify(key) + ':');
-            };
-        }
-        else if (node === undefined) {
-            reader = function () {
-                done();
-                output.push('null');
-            };
-        }
-        else {
-            reader = function () {
-                done();
-                output.push(stringify(node));
-            };
-        }
+    if (isObj && current instanceof Token) {
+        this.push(current.token);
     }
-    
-    return output;
-    
-    function end () {
-        reader = function () {
-            output.push(null);
-        };
+    else if (isObj && isArray(current)) {
+        var len = current.length;
+        if (len === 0) return this.push('[]');
+        
+        var add = [];
+        for (var i = 0; i < len; i++) {
+            add.push(current[i], T(i === len - 1 ? ']' : ','));
+        }
+        this.stack.unshift.apply(this.stack, add);
+        this.push('[');
+    }
+    else if (isObj && current) {
+        var keys = objectKeys(current);
+        var len = keys.length;
+        if (len === 0) return this.push('{}');
+        
+        var add = [];
+        for (var i = 0; i < len; i++) {
+            var key = keys[i];
+            add.push(
+                key, T(':'), current[key],
+                T(i === len - 1 ? '}' : ',')
+            );
+        }
+        this.stack.unshift.apply(this.stack, add);
+        this.push('{');
+    }
+    else if (current === undefined) {
+        this.push('null');
+    }
+    else {
+        this.push(stringify(current));
     }
 };
 
+function T (s) { return new Token(s) }
+function Token (s) { this.token = s }
+ 
 var isArray = Array.isArray || function (obj) {
     return Object.prototype.toString.call(obj) === '[object Array]';
 };
@@ -111,7 +66,7 @@ var hasOwn = Object.prototype.hasOwnProperty;
 var objectKeys = Object.keys || function (obj) {
     var keys = [];
     for (var key in obj) {
-        if (hasOwn.call(obj, key)) keys.push(key);j
+        if (hasOwn.call(obj, key)) keys.push(key);
     }
     return keys;
 };

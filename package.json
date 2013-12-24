@@ -26,5 +26,8 @@
     "name": "James Halliday",
     "email": "mail@substack.net",
     "url": "http://substack.net"
+  },
+  "dependencies": {
+    "inherits": "~2.0.1"
   }
 }
