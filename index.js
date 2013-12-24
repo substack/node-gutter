@@ -8,7 +8,6 @@ function Gutter (root) {
     if (!(this instanceof Gutter)) return new Gutter(root);
     Readable.call(this);
     this.stack = [ root ];
-    this._streaming = 0;
 }
 
 Gutter.prototype._read = function () {

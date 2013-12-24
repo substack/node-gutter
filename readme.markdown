@@ -1,29 +1,15 @@
-gutter
-======
+# gutter
 
-Streaming JSON.stringify() for nested streams
+json stringify nested streams
 
-[![build status](https://secure.travis-ci.org/substack/node-gutter.png)](http://travis-ci.org/substack/node-gutter)
+[![build status](https://secure.travis-ci.org/substack/node-gutter.png)](https://travis-ci.org/substack/node-gutter)
 
-example
-=======
+# example
 
 ``` js
-var gutter = require('gutter');
-var fs = require('fs');
-
-var out = gutter({
-    name : 'words',
-    words : fs.createReadStream('/usr/share/dict/words', { encoding : 'utf8' }),
-    passwd : fs.createReadStream('/etc/passwd', { encoding : 'utf8' }),
-    beep : 'boop'
-});
-
-out.pipe(process.stdout);
 ```
 
-methods
-=======
+# methods
 
 ``` js
 var gutter = require('gutter');

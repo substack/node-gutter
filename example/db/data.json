@@ -1,0 +1,18 @@
+[
+  {"type":"put","key":"hackerspace!sudoroom","value":{"founded":2011}},
+  {"type":"put","key":"hackerspace!noisebridge","value":{"founded":2007}},
+  {"type":"put","key":"hacker!substack","value":{"hackerspace":"sudoroom"}},
+  {"type":"put","key":"hackerspace-hacker!sudoroom!substack","value":0},
+  {"type":"put","key":"hacker!maxogden","value":{"hackerspace":"sudoroom"}},
+  {"type":"put","key":"hackerspace-hacker!sudoroom!maxogden","value":0},
+  {"type":"put","key":"hacker!ioerror","value":{"hackerspace":"noisebridge"}},
+  {"type":"put","key":"hackerspace-hacker!noisebridge!ioerror","value":0},
+  {"type":"put","key":"hacker!mitch","value":{"hackerspace":"noisebridge"}},
+  {"type":"put","key":"hackerspace-hacker!noisebridge!mitch","value":0},
+  {"type":"put","key":"hacker!wrought","value":{"hackerspace":"sudoroom"}},
+  {"type":"put","key":"hackerspace-hacker!sudoroom!wrought","value":0},
+  {"type":"put","key":"hacker!mk30","value":{"hackerspace":"sudoroom"}},
+  {"type":"put","key":"hackerspace-hacker!sudoroom!mk30","value":0},
+  {"type":"put","key":"hacker!yardena","value":{"hackerspace":"sudoroom"}},
+  {"type":"put","key":"hackerspace-hacker!sudoroom!yardena","value":0}
+]
