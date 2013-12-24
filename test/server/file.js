@@ -56,11 +56,11 @@ test('nested files', function (t) {
         );
         
         t.deepEqual(
-            Object.keys(r.files).sort(),
-            ['issue','mtab','self']
+            r.files.map(function (x) { return Object.keys(x)[0] }),
+            [ 'issue', 'mtab', 'self', 'beep' ]
         );
-        t.equal(r.files.issue.join(','), sources.issue);
-        t.equal(r.files.mtab.join(','), sources.mtab);
-        t.equal(r.files.self.self.join(','), sources.self);
+        t.equal(r.files[0].issue.join(','), sources.issue);
+        t.equal(r.files[1].mtab.join(','), sources.mtab);
+        t.equal(r.files[2].self[0].self.join(','), sources.self);
     }));
 });
