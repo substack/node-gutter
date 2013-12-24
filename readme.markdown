@@ -97,29 +97,19 @@ generate the complete output without buffering the whole thing into memory:
 var gutter = require('gutter');
 ```
 
-gutter(object)
---------------
+## var stream = gutter(object)
 
-Return a new json stream with stringify output from the json object `object`.
-Any streams nested inside of `object` will be read and output as data becomes
-available.
+Return a new readable `stream` of json text from a recursive stringification of
+`object`, expanding streams in-place into arrays.
 
-If there are multiple streams in `object`, the others will get paused and
-buffered while waiting for each stream to finish.
-
-Streams are treated as arrays with new elements for every `'data'` event.
-To emit a streaming object using
-[JSONStream](https://github.com/dominictarr/JSONStream)
-`.stringifyStream()`, set `stream.type = 'object'`.
-
-install
-=======
+# install
 
 With [npm](http://npmjs.org) do:
 
-    npm install gutter
+```
+npm install gutter
+```
 
-license
-=======
+# license
 
-MIT/X11
+MIT
