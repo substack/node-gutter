@@ -17,10 +17,16 @@ Gutter.prototype._read = function () {
     var current = this.stack.shift();
     var isObj = typeof current === 'object';
     
-    if (isObj && current instanceof Token) {
+    if (current === undefined || current === null) {
+        this.push('null');
+    }
+    else if (!isObj) {
+        this.push(stringify(current));
+    }
+    else if (current instanceof Token) {
         this.push(current.token);
     }
-    else if (isObj && isArray(current)) {
+    else if (isArray(current)) {
         var len = current.length;
         if (len === 0) return this.push('[]');
         
@@ -31,11 +37,14 @@ Gutter.prototype._read = function () {
         this.stack.unshift.apply(this.stack, add);
         this.push('[');
     }
-    else if (isObj && isStream(current)) {
+    else if (isStream(current)) {
         this.stack.unshift(current);
         this._readStream(current);
     }
-    else if (isObj && current) {
+    else if (Buffer.isBuffer(current)) {
+        this.push(stringify(current.toString('utf8')));
+    }
+    else {
         var keys = objectKeys(current);
         var len = keys.length;
         if (len === 0) return this.push('{}');
@@ -51,38 +60,32 @@ Gutter.prototype._read = function () {
         this.stack.unshift.apply(this.stack, add);
         this.push('{');
     }
-    else if (current === undefined) {
-        this.push('null');
-    }
-    else {
-        this.push(stringify(current));
-    }
 };
 
 Gutter.prototype._readStream = function f (stream) {
     var self = this;
-    if (this._streaming === 0) {
+    var firstData = false;
+    
+    if (!stream._marked) {
+        firstData = true;
+        stream._marked = true;
         stream.on('end', function () {
-            self.stack.shift();
-            if (self._streaming === 0) {
-                self.push('[]');
-            }
-            else {
-                self._streaming = 0;
-                self.push(']');
-            }
+            stream._ended = true;
+            self._read();
         });
     }
     
     (function reader () {
         var buf = stream.read();
-        if (buf === null) return stream.once('readable', reader);
-        var prefix = self._streaming++ === 0 ? '[' : ',';
-        
-        if (Buffer.isBuffer(buf)) {
-            self.push(prefix + stringify(buf.toString('utf8')));
+        if (buf === null && stream._ended) {
+            self.stack.shift();
+            self.stack.unshift(T(']'));
+            self._read();
         }
-        else self.push(prefix + stringify(buf));
+        if (buf === null) return stream.once('readable', reader);
+        var prefix = firstData ? '[' : ',';
+        self.stack.unshift(T(prefix), buf);
+        self._read();
     })();
 };
 
