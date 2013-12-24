@@ -4,6 +4,8 @@ json stringify nested streams
 
 [![build status](https://secure.travis-ci.org/substack/node-gutter.png)](https://travis-ci.org/substack/node-gutter)
 
+[![testling badge](https://ci.testling.com/substack/node-gutter.png)](https://ci.testling.com/substack/node-gutter)
+
 # example
 
 Gutter behaves just like `JSON.stringify()`, except it returns a stream and will
