@@ -1,6 +1,6 @@
 var through2 = require('through2');
 var concat = require('concat-stream');
-var gutter = require('../');
+var gutter = require('../../');
 var test = require('tape');
 var fs = require('fs');
 

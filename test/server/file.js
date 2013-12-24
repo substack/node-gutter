@@ -1,15 +1,20 @@
 var test = require('tape');
 var concat = require('concat-stream');
 var fs = require('fs');
+var path = require('path');
 var gutter = require('../../');
 var through2 = require('through2');
 
 var sources = {
-    mtab: fs.readFileSync(__dirname + '/mtab', 'utf8'),
-    issue: fs.readFileSync(__dirname + '/issue', 'utf8'),
-    legal: fs.readFileSync(__dirname + '/legal', 'utf8'),
+    mtab: fs.readFileSync(__dirname + '/files/mtab', 'utf8'),
+    issue: fs.readFileSync(__dirname + '/files/issue', 'utf8'),
+    legal: fs.readFileSync(__dirname + '/files/legal', 'utf8'),
     self: fs.readFileSync(__filename, 'utf8')
 };
+
+function readStream (file) {
+    return fs.createReadStream(path.join(__dirname, 'files', file));
+}
 
 test('nested files', function (t) {
     t.plan(8);
@@ -17,11 +22,11 @@ test('nested files', function (t) {
     var files = through2({ objectMode: true });
     
     setTimeout(function () {
-        files.push({ issue: fs.createReadStream(__dirname + '/issue') });
+        files.push({ issue: readStream('issue') });
     }, 50);
     
     setTimeout(function () {
-        files.push({ mtab: fs.createReadStream(__dirname + '/mtab') });
+        files.push({ mtab: readStream('/mtab') });
     }, 100);
     
     setTimeout(function () {
@@ -42,7 +47,7 @@ test('nested files', function (t) {
     var out = gutter({
         name: 'files in streams in files',
         files: files,
-        legal: fs.createReadStream(__dirname + '/legal'),
+        legal: readStream('legal'),
         hello : 'world'
     });
     out.pipe(concat(function (body) {
