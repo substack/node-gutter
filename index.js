@@ -31,6 +31,9 @@ Gutter.prototype._read = function () {
         this.stack.unshift.apply(this.stack, add);
         this.push('[');
     }
+    else if (isObj && isStream(current)) {
+        this.push('[STREAM]');
+    }
     else if (isObj && current) {
         var keys = objectKeys(current);
         var len = keys.length;
