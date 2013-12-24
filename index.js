@@ -1,5 +1,6 @@
 var Readable = require('stream').Readable;
 var inherits = require('inherits');
+var json = typeof JSON !== 'undefined' ? JSON : require('jsonify');
 
 module.exports = Gutter;
 inherits(Gutter, Readable);

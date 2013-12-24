@@ -1,7 +1,7 @@
 {
   "name": "gutter",
   "description": "streaming JSON.stringify() for nested streams",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "git://github.com/substack/node-gutter.git"
@@ -28,15 +28,21 @@
     "url": "http://substack.net"
   },
   "dependencies": {
-    "inherits": "~2.0.1"
+    "inherits": "~2.0.1",
+    "jsonify": "0.0.0"
   },
   "testling": {
     "files": "test/*.js",
     "browsers": [
       "ie/6..latest",
-      "firefox/15","firefox/latest", "firefox/nightly",
-      "chrome/15","chrome/latest", "chrome/canary",
-      "opera/12..latest", "opera/next",
+      "firefox/15",
+      "firefox/latest",
+      "firefox/nightly",
+      "chrome/15",
+      "chrome/latest",
+      "chrome/canary",
+      "opera/12..latest",
+      "opera/next",
       "safari/5.1..latest",
       "ipad/6.0..latest",
       "iphone/6.0..latest",
