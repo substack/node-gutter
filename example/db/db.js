@@ -20,7 +20,33 @@ function hackerspaces () {
     ;
     
     function write (row, enc, next) {
-        this.push(row);
+        var name = row.key.split('!')[1];
+        this.push({
+            name: name,
+            founded: row.value.founded,
+            hackers: hackers(name)
+        });
         next();
+    }
+}
+
+function hackers (hackerspace) {
+    var start = 'hackerspace-hacker!' + hackerspace + '!';
+    var opts = { start: start, end: start + '~' };
+    return db.createReadStream(opts)
+        .pipe(through2({ objectMode: true }, write))
+    ;
+    
+    function write (row, enc, next) {
+        var self = this;
+        var name = row.key.split('!')[2];
+        db.get('hacker!' + name, function (err, r) {
+            if (err) return next(err);
+            self.push({
+                name: name,
+                hackerspace: r.hackerspace
+            });
+            next();
+        });
     }
 }
