@@ -6,8 +6,23 @@ json stringify nested streams
 
 # example
 
+Gutter behaves just like `JSON.stringify()`, except it returns a stream and will
+expand any nested streams it encounters. For example, this object stringifies
+some properties and contains some inline content from `/etc/issue`:
+
 ``` js
+var gutter = require('gutter');
+var fs = require('fs');
+
+var out = gutter({
+    platform : process.platform,
+    arch: process.arch,
+    issue: fs.createReadStream('/etc/issue')
+});
+out.pipe(process.stdout);
 ```
+
+
 
 # methods
 
