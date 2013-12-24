@@ -8,10 +8,15 @@ function Gutter (root) {
     if (!(this instanceof Gutter)) return new Gutter(root);
     Readable.call(this);
     this.stack = [ root ];
+    this._ended = false;
 }
 
 Gutter.prototype._read = function () {
-    if (this.stack.length === 0) return this.push(null);
+    if (this._ended) return;
+    if (this.stack.length === 0) {
+        this._ended = true;
+        return this.push(null);
+    }
     
     var current = this.stack.shift();
     var isObj = typeof current === 'object';
@@ -31,12 +36,15 @@ Gutter.prototype._read = function () {
         
         var add = [];
         for (var i = 0; i < len; i++) {
-            add.push(current[i], T(i === len - 1 ? ']' : ','));
+            var x = current[i];
+            if (isStream1(x)) x = wrapStream(x);
+            add.push(x, T(i === len - 1 ? ']' : ','));
         }
         this.stack.unshift.apply(this.stack, add);
         this.push('[');
     }
     else if (isStream(current)) {
+        if (isStream1(current)) current = wrapStream(current);
         this.stack.unshift(current);
         this._readStream(current);
     }
@@ -51,8 +59,10 @@ Gutter.prototype._read = function () {
         var add = [];
         for (var i = 0; i < len; i++) {
             var key = keys[i];
+            var x = current[key];
+            if (isStream1(x)) x = wrapStream(x);
             add.push(
-                key, T(':'), current[key],
+                key, T(':'), x,
                 T(i === len - 1 ? '}' : ',')
             );
         }
@@ -108,4 +118,12 @@ var stringify = JSON.stringify;
 
 function isStream (s) {
     return s && typeof s === 'object' && typeof s.pipe === 'function';
+}
+
+function isStream1 (s) {
+    return isStream(s) && typeof s.read !== 'function';
+}
+
+function wrapStream (s) {
+    return new Readable({ objectMode: true }).wrap(s);
 }
