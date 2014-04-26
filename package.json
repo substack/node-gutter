@@ -18,7 +18,7 @@
   "devDependencies": {
     "through2": "~0.2.3",
     "through": "~2.3.4",
-    "concat-stream": "~1.2.1",
+    "concat-stream": "~1.4.5",
     "tape": "~2.3.0"
   },
   "license": "MIT",
@@ -30,7 +30,6 @@
   "dependencies": {
     "inherits": "~2.0.1",
     "jsonify": "0.0.0",
-    "concat-stream": "~1.4.5",
     "readable-stream": "^1.0.27-1"
   },
   "testling": {
