@@ -18,7 +18,7 @@ test('expand a streams1 stream', function (t) {
         greetings : stream,
         beep : 'boop'
     });
-    out.pipe(concat(function (body) {
+    out.pipe(concat({ encoding: 'string' }, function (body) {
         t.deepEqual(JSON.parse(body), {
             name: 'greetings',
             version: [1,2,3],

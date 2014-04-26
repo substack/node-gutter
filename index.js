@@ -1,6 +1,7 @@
-var Readable = require('stream').Readable;
+var Readable = require('readable-stream').Readable;
 var inherits = require('inherits');
 var json = typeof JSON !== 'undefined' ? JSON : require('jsonify');
+var stringify = json.stringify;
 
 module.exports = Gutter;
 inherits(Gutter, Readable);
@@ -114,8 +115,6 @@ var objectKeys = Object.keys || function (obj) {
     }
     return keys;
 };
-
-var stringify = JSON.stringify;
 
 function isStream (s) {
     return s && typeof s === 'object' && typeof s.pipe === 'function';

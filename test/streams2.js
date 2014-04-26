@@ -2,6 +2,7 @@ var test = require('tape');
 var through2 = require('through2');
 var concat = require('concat-stream');
 var gutter = require('../');
+var json = typeof JSON !== 'undefined' ? JSON : require('jsonify');
 
 test('expand a streams2 stream', function (t) {
     t.plan(1);
@@ -18,7 +19,7 @@ test('expand a streams2 stream', function (t) {
         beep : 'boop'
     });
     out.pipe(concat(function (body) {
-        t.deepEqual(JSON.parse(body), {
+        t.deepEqual(json.parse(body.toString('utf8')), {
             name: 'greetings',
             version: [1,2,3],
             greetings: ['abcd'],
@@ -45,7 +46,7 @@ test('expand a streams2 stream with delay', function (t) {
         beep : 'boop'
     });
     out.pipe(concat(function (body) {
-        t.deepEqual(JSON.parse(body), {
+        t.deepEqual(json.parse(body.toString('utf8')), {
             name: 'greetings',
             version: [1,2,3],
             greetings: ['abc','d'],

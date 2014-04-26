@@ -29,7 +29,9 @@
   },
   "dependencies": {
     "inherits": "~2.0.1",
-    "jsonify": "0.0.0"
+    "jsonify": "0.0.0",
+    "concat-stream": "~1.4.5",
+    "readable-stream": "^1.0.27-1"
   },
   "testling": {
     "files": "test/*.js",
