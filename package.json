@@ -16,7 +16,7 @@
     "test": "tape test/*.js test/server/*.js"
   },
   "devDependencies": {
-    "through2": "~0.2.3",
+    "through2": "^1.0.0",
     "through": "~2.3.4",
     "concat-stream": "~1.4.5",
     "tape": "~2.3.0"
