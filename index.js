@@ -53,6 +53,9 @@ Gutter.prototype._read = function () {
     else if (Buffer.isBuffer(current)) {
         this.push(stringify(current.toString('utf8')));
     }
+    else if (typeof current.toJSON === 'function') {
+        this.push(stringify(current.toJSON()));
+    }
     else {
         var keys = objectKeys(current);
         var len = keys.length;
